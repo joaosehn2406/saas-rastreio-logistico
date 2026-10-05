@@ -1,5 +1,6 @@
 package com.jps.jps.event.eventByCode;
 
+import java.util.List;
 import java.util.Objects;
 
 public enum EventStatus {
@@ -25,6 +26,30 @@ public enum EventStatus {
 
     public String getName() {
         return name;
+    }
+
+    public int progressPercentage() {
+        int finalStage = values().length - 1;
+        return Math.round((id * 100.0f) / finalStage);
+    }
+
+    public boolean isTerminal() {
+        return this == DELIVERED;
+    }
+
+    public List<EventStatus> nextStatuses() {
+        return switch (this) {
+            case REGISTERED -> List.of(COLLECTED);
+            case COLLECTED -> List.of(IN_SEPARATION);
+            case IN_SEPARATION -> List.of(IN_TRANSIT);
+            case IN_TRANSIT -> List.of(IN_TRANSIT, OUT_FOR_DELIVERY);
+            case OUT_FOR_DELIVERY -> List.of(IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED);
+            case DELIVERED -> List.of();
+        };
+    }
+
+    public boolean canTransitionTo(EventStatus target) {
+        return target != null && nextStatuses().contains(target);
     }
 
     public static EventStatus fromId(Integer id) {

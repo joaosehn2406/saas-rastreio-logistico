@@ -40,6 +40,7 @@ public class ShipmentController {
     public ResponseEntity<TimelineEventResponse> addEvent(
             @PathVariable String trackingCode,
             @RequestBody @Valid EventRequest request) {
+        shipmentService.findByTrackingCode(trackingCode);
         return ResponseEntity.status(HttpStatus.CREATED).body(eventByCodeService.save(trackingCode, request));
     }
 }
